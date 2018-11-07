@@ -10,7 +10,7 @@ import cloudinary.uploader
 from datetime import date, timedelta, datetime
 
 
-
+# credenciales para usar cloudinary
 cloudinary.config(
   cloud_name = "dcmdp3lbl",
   api_key = "322921397444291",
@@ -19,7 +19,7 @@ cloudinary.config(
 
 def mostrarFechas(year,dia):
     arrFechas=[]
-    dt = date(year, 8, 13)
+    dt = date(year, 8, 13)# inicio de conteo de fechas
     #dt = date(13, 8, year)
     dt += timedelta(days = dia - dt.weekday())
     while dt.year == year:
@@ -85,6 +85,7 @@ def login(request):
     return redirect('/')
 
 def vistaProfesor(request):
+
     arreglo=[]
     nombreProfesor = User.objects.get(id=request.session['id'])
     id_profesor = request.session['id']
@@ -181,14 +182,16 @@ def vistaAlumno(request):
     #print(arreglo)
 
     return render(request, 'alumnoVista.html', locals())
+
 def uploadFiles(idCita,file):
 
     nomFile=str(file)
     nomFin=str(idCita)+','+nomFile
-    u=cloudinary.uploader.upload(file,resource_type="raw", public_id= nomFin )
+    u=cloudinary.uploader.upload(file,resource_type="raw", public_id= nomFin )# uso del api de cloudinary
     url=u['url']
     result = cloudinary.Search().expression('public_id='+nomFin+'').execute()
     return nomFin
+
 def generarCita(request):
     arrFechas=[]
     arrFechas=mostrarFechas(2018,0)
@@ -198,13 +201,9 @@ def generarCita(request):
        print(s)
     file=request.FILES['file'] if 'file' in request.FILES else False
     if (Cita.objects.filter(fechaCita=request.POST['fecha_pactada'], asesoria_id=request.POST['id_asesoria'], suspendido=True).exists()):
-        #si es que ya existe una cita pactada
-        #return redirect('/alumnoVista')
-        citaGenerada=True
-        #request.session=request.session['id']
+        #si es que existe una cita suspendida
 
-        #return render(request,'alumnoVista.html',locals())
-        #return redirect('/alumnoVista')
+        citaGenerada=True
         return redirect('/alumnoCita')
     elif (Cita.objects.filter(alumno_id=request.session['id'],fechaCita=request.POST['fecha_pactada'], asesoria_id=request.POST['id_asesoria'], estado=True).exists()):
         return redirect('/alumnoCita')
@@ -214,7 +213,6 @@ def generarCita(request):
     if file==False:# si es que no hay archivo
         print("No se grabo")
     else:
-
         cita.archivo=uploadFiles(cita.id,file)
         cita.save()
     return redirect('/alumnoCita')
