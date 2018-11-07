@@ -744,7 +744,7 @@ def busquedaProfesor(request):
             for y in asesoriaArr:
                 CitasArr=Cita.objects.filter(asesoria=y)
                 for z in CitasArr:
-                    if (z.estado == False and z.suspendido=False):
+                    if (z.estado == False and z.suspendido==False):
                         x_info = {}
                         x_info['id']= z.id
                         alumno= User.objects.get(id=z.alumno_id)
